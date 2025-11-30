@@ -248,8 +248,45 @@ class AlgoritmoNuestro(AlgoritmoOrientaciones):
     def __init__(self):
         super().__init__()
 
-    def calc_vector_caracteristicas(self):
-        pass
+    def calc_vector_caracteristicas(self, img: np.ndarray) -> np.ndarray:
+        img_gris = np.mean(img, axis=2).astype(np.uint8)
+        reescalada = self.__reescalar_imagen(img_gris)
+        
+        tam_celda_ext = 16
+        tam_celda_int = 8
+
+        vec_carac_int = self.__calc_vector_carac_imagen_interior(reescalada, tam_celda_ext, tam_celda_int)
+        vec_carac_ext = self.__calc_vector_carac_imagen_exterior(reescalada, tam_celda_ext)
+        vec_carac = np.concatenate((vec_carac_int, vec_carac_ext))
+        return vec_carac
+        
+    def __calc_vector_carac_imagen_interior(self, img: np.ndarray, tam_celda_ext: int, tam_celda_int: int) -> np.ndarray:
+        img_interior = img[2*tam_celda_ext:-2*tam_celda_ext, 2*tam_celda_ext:-2*tam_celda_ext]
+        vec_carac_interior = self.__calc_vector_carac_zona(img_interior, tam_celda_int)
+        return vec_carac_interior
+    
+    def __calc_vector_carac_imagen_exterior(self, img: np.ndarray, tam_celda_ext: int) -> np.ndarray:
+        borde_superior = img[:2*tam_celda_ext, :]
+        borde_inferior = img[-2*tam_celda_ext:, :]
+        borde_izquierdo = img[:, :2*tam_celda_ext]
+        borde_derecho = img[:, -2*tam_celda_ext:]
+        vec_carac_borde_sup = self.__calc_vector_carac_zona(borde_superior, tam_celda_ext)
+        vec_carac_borde_inf = self.__calc_vector_carac_zona(borde_inferior, tam_celda_ext)
+        vec_carac_borde_izq = self.__calc_vector_carac_zona(borde_izquierdo, tam_celda_ext)
+        vec_carac_borde_der = self.__calc_vector_carac_zona(borde_derecho, tam_celda_ext)
+        vec_carac_exterior = np.concatenate((
+            vec_carac_borde_sup,
+            vec_carac_borde_inf,
+            vec_carac_borde_izq,
+            vec_carac_borde_der
+        ))
+        return vec_carac_exterior
+
+    def __calc_vector_carac_zona(self, zona: np.ndarray, tam_celda: int) -> np.ndarray:
+        magnitudes, orientaciones = self.__calcular_derivadas_Sobel(zona)
+        img_hist = self.__calc_imagen_histograma(orientaciones, magnitudes, tam_celda)
+        vec_carac_zona = self.__normalizacion_por_bloques(img_hist)
+        return vec_carac_zona
 
 class TransformadorCaracteristicas:
     def __init__(self, algoritmo: AlgoritmoCaracteristicas):
