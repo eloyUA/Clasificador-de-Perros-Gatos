@@ -281,6 +281,44 @@ class PredictorRandomForest(PredictorPerroGato):
         # modelo = (Creamos el RandomForest)
         super().__init__(modelo)
 
+def experimento(
+        preprocesador: Preprocesador,
+        algoritmo: AlgoritmoCaracteristicas,
+        predictor: PredictorPerroGato
+    ) -> float:
+    """ Devuelve el accuracy """
+
+    # =========== PROCESO DE ENTRENAMIENTO ===========
+    # Leemos los datos
+    lector = Lector(
+        ruta_train_perros='dataset/cat_dog_100/train/dog',
+        ruta_train_gatos='dataset/cat_dog_100/train/cat',
+        ruta_test_perros='dataset/cat_dog_100/test/dog',
+        ruta_test_gatos='dataset/cat_dog_100/test/cat'
+    )
+    X_train, y_train, X_test, y_test = lector.leer_dataset()
+
+    # Los preprocesamos
+    for i, img in enumerate(X_train):
+        X_train[i] = preprocesador.preprocesar(img)
+    for i, img in enumerate(X_train):
+        X_test[i] = preprocesador.preprocesar(img)
+
+    # Transformamos las imagenes a vectores de caracterisitcas
+    transformador = TransformadorCaracteristicas(algoritmo)
+    for i, img in enumerate(X_train):
+        X_train[i] = transformador.transformar(img)
+    for i, img in enumerate(X_train):
+        X_test[i] = transformador.transformar(img)
+
+    # Entrenar la IA
+    predictor.entrenar(X_train, y_train)
+
+    # =========== PROCESO DE PREDICCION ===========
+    y_test_pred = predictor.predecir_perro_gato(X_test)
+    accuracy = np.where(y_test == y_test_pred)[0].size / y_test.size
+    return accuracy
+
 if __name__ == '__main__':
     # Probar la clase Lector (FUNCIONA)
     '''lector = Lector(
@@ -293,4 +331,7 @@ if __name__ == '__main__':
     X_train, y_train, X_test, y_test = lector.leer_dataset()
     print(len(X_train), len(y_train), len(X_test), len(y_test))'''
 
-    pass
+    experimento(PrepMedia(), AlgoritmoHistograma(), PredictorAdaboost())
+    experimento(PrepMedia(), AlgoritmoHistograma(), PredictorAdaboost())
+    experimento(PrepMedia(), AlgoritmoHistograma(), PredictorAdaboost())
+    experimento(PrepMedia(), AlgoritmoHistograma(), PredictorAdaboost())
