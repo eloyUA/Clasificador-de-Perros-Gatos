@@ -338,14 +338,14 @@ def experimento(
     # Los preprocesamos
     for i, img in enumerate(X_train):
         X_train[i] = preprocesador.preprocesar(img)
-    for i, img in enumerate(X_train):
+    for i, img in enumerate(X_test):
         X_test[i] = preprocesador.preprocesar(img)
 
     # Transformamos las imagenes a vectores de caracterisitcas
     transformador = TransformadorCaracteristicas(algoritmo)
     for i, img in enumerate(X_train):
         X_train[i] = transformador.transformar(img)
-    for i, img in enumerate(X_train):
+    for i, img in enumerate(X_test):
         X_test[i] = transformador.transformar(img)
 
     # Entrenar la IA
