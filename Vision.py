@@ -7,16 +7,18 @@ from typing import Tuple, List
 from abc import ABC, abstractmethod
 
 # ======== SISTEMA DE LECTURA DE DATOS ========
+class ClasePerroGato:
+    CLASE_PERRO = 0
+    CLASE_GATO = 1
+
 class Lector:
     def __init__(self, ruta_train_perros: str, ruta_train_gatos: str,
                 ruta_test_perros: str, ruta_test_gatos: str):
-        self.__ruta_train_perros = ruta_train_perros
+        self.__ruta_train_perros = ruta_train_perros # El __ es para poner los miembros privados
         self.__ruta_train_gatos = ruta_train_gatos
         self.__ruta_test_perros = ruta_test_perros
         self.__ruta_test_gatos = ruta_test_gatos
 
-        self.__CLASE_PERRO = 0
-        self.__CLASE_GATO = 1
         self.__SEMILLA = 50
 
     def leer_dataset(self) -> Tuple[List[np.ndarray], List, List[np.ndarray], List]:
@@ -35,8 +37,8 @@ class Lector:
     def __cargar_conjunto(self, ruta_perros: str, ruta_gatos: str) -> Tuple[List, List]:
         imgs_perros = self.__cargar_imagenes(ruta_perros)
         imgs_gatos = self.__cargar_imagenes(ruta_gatos)
-        clases_perros =  [self.__CLASE_PERRO for i in range(len(imgs_perros))]
-        clases_gatos = [self.__CLASE_GATO for i in range(len(imgs_gatos))]
+        clases_perros =  [ClasePerroGato.CLASE_PERRO for i in range(len(imgs_perros))]
+        clases_gatos = [ClasePerroGato.CLASE_GATO for i in range(len(imgs_gatos))]
 
         imagenes = imgs_perros + imgs_gatos
         clases = clases_perros + clases_gatos
@@ -57,17 +59,65 @@ class Lector:
             imagenes.append(img)
         return imagenes
 
+# ======== SISTEMA DE PREPROCESAMIENTO ========
+class Preprocesador(ABC):
+    def __init__(self):
+        pass
+
+    def __eliminar_ruido_media(self, img: np.ndarray, m: int) -> np.ndarray:
+        pass
+
+    def __eliminar_ruido_mediana(self, img: np.ndarray, m: int) -> np.ndarray:
+        pass
+
+    def __equalizar(self, img: np.ndarray) -> np.ndarray:
+        pass
+
+    @abstractmethod
+    def preprocesar(self, img: np.ndarray) -> np.ndarray:
+        pass
+
+class PrepMedia(Preprocesador):
+    def __init__(self):
+        super().__init__()
+
+        self.__TAM_KERNEL = 3
+
+    def preprocesar(self, img: np.ndarray) -> np.ndarray:
+        return self.__eliminar_ruido_media(img, self.__TAM_KERNEL)
+
+class PrepMediana(Preprocesador):
+    def __init__(self):
+        super().__init__()
+
+    def preprocesar(self, img: np.ndarray) -> np.ndarray:
+        pass
+
+class PrepMediaEqu(Preprocesador):
+    def __init__(self):
+        super().__init__()
+
+    def preprocesar(self, img: np.ndarray) -> np.ndarray:
+        pass
+
+class PrepMedianaEqu(Preprocesador):
+    def __init__(self):
+        super().__init__()
+
+    def preprocesar(self, img: np.ndarray) -> np.ndarray:
+        pass
+
 # ======== SISTEMA DE EXTRACCION DE CARACTERISTICAS ========
 class AlgoritmoCaracteristicas(ABC):
     @abstractmethod
-    def calc_caracteristicas(self, imagen: np.ndarray) -> np.ndarray:
+    def calc_vector_caracteristicas(self, imagen: np.ndarray) -> np.ndarray:
         pass
 
 class AlgoritmoHistograma(AlgoritmoCaracteristicas): 
     def __init__(self):
         super().__init__()
     
-    def calc_caracteristicas(self, imagen: np.ndarray) -> np.ndarray:
+    def calc_vector_caracteristicas(self, imagen: np.ndarray) -> np.ndarray:
         hist_r = self.__calc_histograma_canal(imagen[:, :, 0])
         hist_g = self.__calc_histograma_canal(imagen[:, :, 1])
         hist_b = self.__calc_histograma_canal(imagen[:, :, 2])
@@ -82,7 +132,7 @@ class AlgoritmoTexturas(AlgoritmoCaracteristicas):
     def __init__(self):
         super().__init__()
 
-    def calc_caracteristicas(self, imagen: np.ndarray) -> np.ndarray:
+    def calc_vector_caracteristicas(self, imagen: np.ndarray) -> np.ndarray:
         m = 3
         mdiv2 = m // 2
         kernel = np.array([
@@ -106,11 +156,46 @@ class AlgoritmoOrientaciones(AlgoritmoCaracteristicas):
     def __init__(self):
         super().__init__()
 
-    def calc_caracteristicas(self, img: np.ndarray) -> np.ndarray:
-        """ Nota: Para imagenes de distintos tamaños el vector de características también lo es """
+        self.__REESCALADO = (256, 256) # Potencias de 2 y ambos numeros iguales
+
+    def calc_vector_caracteristicas(self, img: np.ndarray) -> np.ndarray:
+        tam_celda = 8
         img_gris = np.mean(img, axis=2).astype(np.uint8)
-        magnitudes, orientaciones = self.__calcular_derivadas_Sobel(img_gris)
+        img_reescalada = self.__reescalar_imagen(img_gris)
+
+        magnitudes, orientaciones = self.__calcular_derivadas_Sobel(img_reescalada)
+        imagen_histogramas = self.__calc_imagen_histograma(magnitudes, orientaciones, tam_celda)
+        vec_carac = self.__normalizacion_por_bloques(imagen_histogramas)
+        return vec_carac
+
+    def __reescalar_imagen(self, img: np.ndarray) -> np.ndarray:
+        h, w = self.__REESCALADO
+        if (np.abs(np.log2(h) - round(np.log2(h))) > 10e-2 or
+            np.abs(np.log2(w) - round(np.log2(w))) > 10e-2):
+            raise Exception('El reescalado tiene que ser potencia de 2')
+        if h != w:
+            raise Exception('El reescalado debe ser cuadrado')
         
+        tam_obj = self.__REESCALADO[0] # O self.__REESCALADO[1] (Es cuadrada)
+        escala = tam_obj / max(h, w)
+        nuevo_w = int(w * escala)
+        nuevo_h = int(h * escala)
+        reescalada = cv2.resize(img, (nuevo_w, nuevo_h), interpolation=cv2.INTER_AREA)
+
+        pad_w = tam_obj - nuevo_w
+        pad_h = tam_obj - nuevo_h
+        pad_left = pad_w // 2
+        pad_right = pad_w - pad_left
+        pad_top = pad_h // 2
+        pad_bottom = pad_h - pad_top
+        resultado = cv2.copyMakeBorder(
+            reescalada,
+            pad_top, pad_bottom,
+            pad_left, pad_right,
+            cv2.BORDER_CONSTANT,
+            value=[0, 0, 0]
+        )
+        return resultado
 
     def __calcular_derivadas_Sobel(self, img_gris: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         derv_x = cv2.Sobel(img_gris, cv2.CV_64F, 1, 0, ksize=3)
@@ -118,33 +203,60 @@ class AlgoritmoOrientaciones(AlgoritmoCaracteristicas):
         magnitudes = np.sqrt(derv_x**2 + derv_y**2)
         orientaciones = np.abs(180*np.arctan2(derv_y, derv_x) / np.pi)
         orientaciones[orientaciones < 0] = 180 + orientaciones
+        orientaciones[orientaciones == 180] = 0 # Para que angulo perteneca a [0º, 180º)
 
         return magnitudes, orientaciones
+
+    def __calc_imagen_histograma(self, img_ori: np.ndarray, img_mag: np.ndarray, m: int=8) -> np.ndarray:
+        if (np.abs(np.log2(m) - round(np.log2(m))) > 10e-2):
+            raise Exception('El tamaño de celda tiene que ser potencia de 2')
+        
+        forma_histograma_bloques = (img_ori.shape[0] // m, img_ori.shape[1] // m, 9)
+        imagen_histograma = np.zeros(shape=forma_histograma_bloques)
+        for i in range(0, img_ori.shape[0], m):
+            for j in range(0, img_ori.shape[1], m):
+                bloque_ori = img_ori[i:i+m, j:j+m]
+                bloque_mag = img_mag[i:i+m, j:j+m]
+                hist_bloque = self.__calc_histograma_bloque(bloque_ori, bloque_mag)
+                imagen_histograma[i // m, j // m] = hist_bloque
+        return imagen_histograma
+
+    def __calc_histograma_bloque(self, bloque_ori: np.ndarray, bloque_mag: np.ndarray) -> np.ndarray:
+        pos_l = bloque_ori // 20
+        pos_r = (pos_l + 1) % 9
+        angulo_l = 20*pos_l
+        angulo_r = 20*(pos_l + 1)
+        valores_hist_l = (bloque_mag * ((angulo_r - bloque_ori) / 20))
+        valores_hist_r = (bloque_mag * ((bloque_ori - angulo_l) / 20))
+
+        hist = np.zeros(shape=(9, ))
+        np.add.at(hist, pos_l.ravel(), valores_hist_l.ravel())
+        np.add.at(hist, pos_r.ravel(), valores_hist_r.ravel())
+        return hist
     
-    def transformar_imagenes_tamaño_optimo(self, imagenes: List[np.ndarray]) -> List[np.ndarray]:
-        pass
+    def __normalizacion_por_bloques(self, imagen_hist: np.ndarray) -> np.ndarray:
+        m = 2 # (2x2) celdas = 1 bloque
+        mdiv2 = m // 2
+        img_hist_norm = np.zeros(shape=(imagen_hist.shape[0] - mdiv2, imagen_hist.shape[1] - mdiv2, 36))
+        for i in range(0, imagen_hist.shape[0] - mdiv2):
+            for j in range(0, imagen_hist.shape[1] - mdiv2):
+                vector = imagen_hist[i:i+m, j:j+m, :].flatten()
+                img_hist_norm[i, j] = np.linalg.norm(vector)
+        return img_hist_norm.flatten()
 
-    def obtener_orientacion_magnitud(derivada_x: np.ndarray, derivada_y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        pass
-    def calcular_histograma_orientaciones(magnitud: np.ndarray, orientacion: np.ndarray, num_bins: int ) -> np.ndarray: #EL num_bins es 9 siempre
-        pass
-
-class AlgoritmoNuestro(AlgoritmoCaracteristicas):
+class AlgoritmoNuestro(AlgoritmoOrientaciones):
     def __init__(self):
         super().__init__()
 
-    def calc_caracteristicas():
+    def calc_vector_caracteristicas(self):
         pass
 
 class TransformadorCaracteristicas:
     def __init__(self, algoritmo: AlgoritmoCaracteristicas):
-        self.__algoritmo = algoritmo # El __ es para poner los miembros privados
-
-    def __preprocesar(self, img: np.ndarray) -> np.ndarray:
-        pass
+        self.__algoritmo = algoritmo
 
     def transformar(self, img: np.ndarray) -> np.ndarray:
-        pass
+        return self.__algoritmo.calc_vector_caracteristicas(img)
 
 # ======== SISTEMA DE IA ========
 class PredictorPerroGato:
@@ -153,6 +265,7 @@ class PredictorPerroGato:
         pass
 
     def entrenar(self, X: np.ndarray, y: np.ndarray) -> None:
+        """ Hacer un entrenamiento buscando los mejores hiperparametros con conjunto de validacion """
         pass
 
     def predecir_perro_gato(self, X: np.ndarray) -> np.ndarray:
@@ -180,17 +293,4 @@ if __name__ == '__main__':
     X_train, y_train, X_test, y_test = lector.leer_dataset()
     print(len(X_train), len(y_train), len(X_test), len(y_test))'''
 
-    a = np.array([
-        [1, 7, 2],
-        [8, 5, 8],
-        [1, 3, 3],
-    ])
-
-    kernel = np.array([
-        [2**7, 2**6, 2**5],
-        [2**0, 0000, 2**4],
-        [2**1, 2**2, 2**3]
-    ], dtype=np.uint8)
-
-    mascara = (a >= a[1, 1]).astype(np.uint8)
-    print(mascara)
+    pass
