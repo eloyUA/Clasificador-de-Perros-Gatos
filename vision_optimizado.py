@@ -5,6 +5,7 @@ import random
 
 from typing import Tuple, List
 from abc import ABC, abstractmethod
+from numba import njit
 
 # ======== SISTEMA DE LECTURA DE DATOS ========
 class ClasePerroGato:
@@ -108,6 +109,22 @@ class PrepMedianaEqu(Preprocesador):
         pass
 
 # ======== SISTEMA DE EXTRACCION DE CARACTERISTICAS ========
+@njit
+def conv_algoritmo_texturas(img_amp: np.ndarray, m: int) -> np.ndarray:
+    kernel = np.array([
+        [2**7, 2**6, 2**5],
+        [2**0, 0000, 2**4],
+        [2**1, 2**2, 2**3]
+    ], dtype=np.uint8)
+
+    resultado = np.zeros(shape=(img_amp.shape[0] + m, img_amp.shape[1] + m), dtype=np.uint8)
+    for i in range(img_amp.shape[0] - m):
+        for j in range(img_amp.shape[1] - m):
+            zona_comun = img_amp[i:i+m, j:j+m]
+            mascara = (zona_comun >= zona_comun[1, 1]).astype(np.uint8)
+            resultado[i, j] = np.sum(kernel * mascara)
+    return resultado
+
 class AlgoritmoCaracteristicas(ABC):
     @abstractmethod
     def calc_vector_caracteristicas(self, imagen: np.ndarray) -> np.ndarray:
@@ -135,20 +152,10 @@ class AlgoritmoTexturas(AlgoritmoCaracteristicas):
     def calc_vector_caracteristicas(self, imagen: np.ndarray) -> np.ndarray:
         m = 3
         mdiv2 = m // 2
-        kernel = np.array([
-            [2**7, 2**6, 2**5],
-            [2**0, 0000, 2**4],
-            [2**1, 2**2, 2**3]
-        ], dtype=np.uint8)
 
-        resultado = np.zeros(shape=imagen.shape, dtype=np.uint8)
         img_gris = np.mean(imagen, axis=2).astype(np.uint8)
         img_gris_amp = cv2.copyMakeBorder(img_gris, mdiv2, mdiv2, mdiv2, mdiv2, cv2.BORDER_REPLICATE)
-        for i in range(img_gris_amp.shape[0] - m):
-            for j in range(img_gris_amp.shape[1] - m):
-                zona_comun = img_gris_amp[i:i+m, j:j+m]
-                mascara = (zona_comun >= zona_comun[1, 1]).astype(np.uint8)
-                resultado[i, j] = np.sum(kernel * mascara)
+        resultado = conv_algoritmo_texturas(img_gris_amp, m)
 
         return cv2.calcHist([resultado], [0], None, [256], [0, 256]).flatten()
 
