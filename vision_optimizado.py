@@ -4,7 +4,7 @@ import cv2
 import random
 import time
 
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 from abc import ABC, abstractmethod
 from numba import njit
 from sklearn.ensemble import AdaBoostClassifier
@@ -90,7 +90,7 @@ def conv_kernel_preprocesador(img_amp: np.ndarray, m: int, kernel: np.ndarray) -
         for j in range(img_amp.shape[1] - m):
             zona_comun = img_amp[i:i+m, j:j+m]
             resultado[i, j] = np.sum(kernel * zona_comun)
-    return resultado.clip(0, 255).astype(np.uint8)
+    return resultado.astype(np.uint8)
 
 class Preprocesador(ABC):
     def __init__(self, m: int):
@@ -116,7 +116,7 @@ class Preprocesador(ABC):
     def __aplicar_filtro(
             self, img: np.ndarray,
             tipo: str,
-            kernel: np.ndarray | None=None
+            kernel: Optional[np.ndarray] = None
         ) -> np.ndarray:
         """ tipo: "media", "mediana", "gaussiano" """
 
@@ -409,7 +409,7 @@ class PredictorPerroGato:
             y_train: np.ndarray,
             X_val: np.ndarray,
             y_val: np.ndarray
-        ) -> None:
+        ) -> List[float]:
         
         accuracies = []
         best_acc = -np.inf
@@ -466,9 +466,7 @@ class Experimento:
         
         t_ini = time.time()
         X_train, y_train, X_test, y_test = self.__leer_imagenes()
-        X_train, y_train, X_test, y_test = self.__preprocesar_imagenes(
-            X_train, y_train, X_test, y_test
-        )
+        X_train, X_test = self.__preprocesar_imagenes(X_train, X_test)
         X_train, X_test = self.__transformar_imagenes(X_train, X_test)
         accuracy = self.__utilizar_IA(
             np.array(X_train),
@@ -506,9 +504,7 @@ class Experimento:
     def __preprocesar_imagenes(
             self,
             X_train: np.ndarray,
-            y_train: np.ndarray,
             X_test: np.ndarray,
-            y_test: np.ndarray
         ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
 
         print('   Preprocesando imágenes...')
@@ -516,7 +512,7 @@ class Experimento:
             X_train[i] = self.__preprocesador.preprocesar(img)
         for i, img in enumerate(X_test):
             X_test[i] = self.__preprocesador.preprocesar(img)
-        return X_train, y_train, X_test, y_test
+        return X_train, X_test
 
     def __transformar_imagenes(
             self,
@@ -552,9 +548,9 @@ class Experimento:
 if __name__ == '__main__':
     exp1 = Experimento(
         nombre='Experimento 1',
-        preprocesador=PrepGaussianoEqu(7, 3),
-        algoritmo=AlgoritmoTexturas(),
-        predictor=PredictorPerroGato('random_forest', 300),
+        preprocesador=PrepGaussiano(7, 3),
+        algoritmo=AlgoritmoHistograma(),
+        predictor=PredictorPerroGato('random_forest', 1000),
         semilla=50
     )
 
