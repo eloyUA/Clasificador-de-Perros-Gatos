@@ -1,0 +1,285 @@
+<mxfile host="65bd71144e">
+    <diagram id="eBwglJikYotVvjgHpdsR" name="Page-1">
+        <mxGraphModel dx="731" dy="598" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1750" pageHeight="1750" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="&lt;font face=&quot;Nunito&quot;&gt;&lt;b&gt;ClasePerroGato&lt;/b&gt;&lt;/font&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="260" width="160" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="&lt;font face=&quot;Nunito&quot;&gt;+ CLASE_PERRO: int=-1&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;+ CLASE_GATO: int=1&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="2" vertex="1">
+                    <mxGeometry y="26" width="160" height="44" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="&lt;font face=&quot;Nunito&quot;&gt;Lector&lt;/font&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="380" y="360" width="320" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="&lt;font face=&quot;Nunito&quot;&gt;- ruta_train_perros: str&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- ruta_train_gatos: str&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- ruta_test_perros: str&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- ruta_test_gatos: str&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- semilla: int&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="9" vertex="1">
+                    <mxGeometry y="26" width="320" height="84" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="9" vertex="1">
+                    <mxGeometry y="110" width="320" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="&lt;font face=&quot;Nunito&quot;&gt;+ leer(): X_train, y_train, X_test, y_test&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- cargar_conjunto(ruta_perros: str, ruta_gatos: str): X, y&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- cargar_imagenes(ruta: str): imagenes&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="9" vertex="1">
+                    <mxGeometry y="120" width="320" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="&lt;font&gt;&amp;lt;&amp;lt;abstract&amp;gt;&amp;gt;&lt;/font&gt;&lt;div&gt;&lt;font&gt;Preprocesador&lt;/font&gt;&lt;/div&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontFamily=Nunito;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss2%3Ffamily%3DNunito%3Awght%40200%3B300%3B400%3B600%3B700%3B800%3B900%26display%3Dswap;" parent="1" vertex="1">
+                    <mxGeometry x="1200" y="155" width="250" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="&lt;font face=&quot;Nunito&quot;&gt;- m: int #Tamaño del kernel (mxm)&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="13" vertex="1">
+                    <mxGeometry y="40" width="250" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="13" vertex="1">
+                    <mxGeometry y="70" width="250" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="&lt;font face=&quot;Nunito&quot;&gt;+ preprocesar(img): img {abstract}&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;+ filtro_media(img): img&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;+ filtro_mediana(img): img&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;+ filtro_gaussiano(img, sigma): img&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;+ equalizar(img): img&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- aplicar_filtro(img, tipo_filtro, kernel): img&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- equalizar_canal(canal): canal&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="13" vertex="1">
+                    <mxGeometry y="80" width="250" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="87" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;endArrow=block;endFill=0;strokeWidth=1;endSize=12;entryX=0.261;entryY=0.992;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="21" target="16" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="&lt;font face=&quot;Nunito&quot;&gt;PrepMedia&lt;/font&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1070" y="430" width="240" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="21" vertex="1">
+                    <mxGeometry y="26" width="240" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="&lt;font face=&quot;Nunito&quot;&gt;+ preprocesar(img): img&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="21" vertex="1">
+                    <mxGeometry y="36" width="240" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="89" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=block;endFill=0;endSize=12;" parent="1" source="25" target="16" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1040" y="538"/>
+                            <mxPoint x="1040" y="295"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="25" value="&lt;font face=&quot;Nunito&quot;&gt;PrepMediana&lt;/font&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1070" y="520" width="240" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="25" vertex="1">
+                    <mxGeometry y="26" width="240" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="27" value="&lt;font face=&quot;Nunito&quot;&gt;+ preprocesar(img): img&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="25" vertex="1">
+                    <mxGeometry y="36" width="240" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="35" value="&lt;font face=&quot;Nunito&quot;&gt;PrepGaussiano&lt;/font&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1070" y="615" width="240" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="36" value="&lt;font face=&quot;Nunito&quot;&gt;- sigma: float&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="35" vertex="1">
+                    <mxGeometry y="26" width="240" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="37" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="35" vertex="1">
+                    <mxGeometry y="50" width="240" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="38" value="&lt;font face=&quot;Nunito&quot;&gt;+ preprocesar(img): img&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="35" vertex="1">
+                    <mxGeometry y="60" width="240" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="39" value="&lt;font face=&quot;Nunito&quot;&gt;PrepMediaEqu&lt;/font&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1330" y="430" width="240" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="40" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="39" vertex="1">
+                    <mxGeometry y="26" width="240" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="41" value="&lt;font face=&quot;Nunito&quot;&gt;+ preprocesar(img): img&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="39" vertex="1">
+                    <mxGeometry y="36" width="240" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="42" value="&lt;font face=&quot;Nunito&quot;&gt;PrepMedianaEqu&lt;/font&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1330" y="520" width="240" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="43" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="42" vertex="1">
+                    <mxGeometry y="26" width="240" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="44" value="&lt;font face=&quot;Nunito&quot;&gt;+ preprocesar(img): img&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="42" vertex="1">
+                    <mxGeometry y="36" width="240" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="45" value="&lt;font face=&quot;Nunito&quot;&gt;PrepGaussianoEqu&lt;/font&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1330" y="615" width="240" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="46" value="&lt;font face=&quot;Nunito&quot;&gt;- sigma: float&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="45" vertex="1">
+                    <mxGeometry y="26" width="240" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="47" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="45" vertex="1">
+                    <mxGeometry y="50" width="240" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="48" value="&lt;font face=&quot;Nunito&quot;&gt;+ preprocesar(img): img&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="45" vertex="1">
+                    <mxGeometry y="60" width="240" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="53" value="&lt;font face=&quot;Nunito&quot;&gt;TransformadorCaracteristicas&lt;/font&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="440" y="780" width="240" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="54" value="&lt;font face=&quot;Nunito&quot;&gt;- algoritmo: AlgoritmoCaracteristicas&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="53" vertex="1">
+                    <mxGeometry y="26" width="240" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="55" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="53" vertex="1">
+                    <mxGeometry y="50" width="240" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="56" value="&lt;font face=&quot;Nunito&quot;&gt;+ transformar(img): vector_caracteristicas&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="53" vertex="1">
+                    <mxGeometry y="60" width="240" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="57" value="&lt;font face=&quot;Nunito&quot;&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;AlgoritmoCaracteristicas&lt;/font&gt;&lt;/div&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="440" y="930" width="240" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="59" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="57" vertex="1">
+                    <mxGeometry y="40" width="240" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="60" value="&lt;font face=&quot;Nunito&quot;&gt;+ calc_vector_caracteristicas(img): vector&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="57" vertex="1">
+                    <mxGeometry y="50" width="240" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="97" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;endArrow=block;endFill=0;endSize=12;dashed=1;" parent="1" source="61" target="57" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="220" y="950"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="98" value="&lt;font face=&quot;Nunito&quot;&gt;&amp;lt;&amp;lt;implements&amp;gt;&amp;gt;&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="97" vertex="1" connectable="0">
+                    <mxGeometry x="0.0652" y="2" relative="1" as="geometry">
+                        <mxPoint x="-51" y="72" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="61" value="&lt;font face=&quot;Nunito&quot;&gt;AlgoritmoHistograma&lt;/font&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="100" y="1090" width="240" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="63" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="61" vertex="1">
+                    <mxGeometry y="26" width="240" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="64" value="&lt;font face=&quot;Nunito&quot;&gt;+ calc_vector_caracteristicas(img): vector&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- calc_histograma_canal(canal): hist&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="61" vertex="1">
+                    <mxGeometry y="36" width="240" height="44" as="geometry"/>
+                </mxCell>
+                <mxCell id="65" value="&lt;font face=&quot;Nunito&quot;&gt;AlgoritmoTexturas&lt;/font&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="780" y="1090" width="240" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="67" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="65" vertex="1">
+                    <mxGeometry y="26" width="240" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="68" value="&lt;font face=&quot;Nunito&quot;&gt;+ calc_vector_caracteristicas(img): vector&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="65" vertex="1">
+                    <mxGeometry y="36" width="240" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="69" value="&lt;font face=&quot;Nunito&quot;&gt;AlgoritmoOrientaciones&lt;/font&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="370" y="1090" width="380" height="170" as="geometry"/>
+                </mxCell>
+                <mxCell id="70" value="&lt;font face=&quot;Nunito&quot;&gt;- REESCALADO: Tuple&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="69" vertex="1">
+                    <mxGeometry y="26" width="380" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="71" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="69" vertex="1">
+                    <mxGeometry y="50" width="380" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="72" value="&lt;font face=&quot;Nunito&quot;&gt;+ calc_vector_caracteristicas(img): vector&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- reescalar_imagen(img_gris): img_gris&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- calcular_derivadas_sobel(img_gris): mag, ori&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- calcular_imagen_histograma(ori, mag, m): img_hist&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- calcular_histograma_bloque(bloque_ori, bloque_mag): hist&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- normalizacion_por_bloques(img_hist): vector_caracteristicas&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="69" vertex="1">
+                    <mxGeometry y="60" width="380" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="103" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;endArrow=block;endFill=0;endSize=12;" parent="1" source="73" target="72" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="73" value="&lt;font face=&quot;Nunito&quot;&gt;AlgoritmoNuestro&lt;/font&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="335" y="1340" width="450" height="146" as="geometry"/>
+                </mxCell>
+                <mxCell id="75" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="73" vertex="1">
+                    <mxGeometry y="26" width="450" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="76" value="&lt;font face=&quot;Nunito&quot;&gt;+ calc_vector_caracteristicas(img): vector&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- calc_vector_carac_imagen_interior(img, tam_celda_ext, tam_celda_int): vector&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- calc_vector_carac_imagen_exterior(img, tam_celda_ext): vector&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- calc_vector_carac_zona(zona): vector&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="73" vertex="1">
+                    <mxGeometry y="36" width="450" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="77" value="&lt;font face=&quot;Nunito&quot;&gt;PredictorPerroGato&lt;/font&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1170" y="880" width="300" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="78" value="&lt;font face=&quot;Nunito&quot;&gt;- max_est: int #Maximo numero de estimadores&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- tipo_modelo: str # &#39;random_forest&#39; o &#39;adaboost&#39;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- modelo&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="77" vertex="1">
+                    <mxGeometry y="26" width="300" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="79" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="77" vertex="1">
+                    <mxGeometry y="80" width="300" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="80" value="&lt;font face=&quot;Nunito&quot;&gt;+ entrenar(X_train, y_train, X_val, y_val): accuracies&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;+ predecir(X): y&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- crear_modelo(n_estimadores: int)&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="77" vertex="1">
+                    <mxGeometry y="90" width="300" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="81" value="&lt;font face=&quot;Nunito&quot;&gt;Experimento&lt;/font&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1160" y="1140" width="320" height="220" as="geometry"/>
+                </mxCell>
+                <mxCell id="82" value="&lt;font face=&quot;Nunito&quot;&gt;- nombre: str&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- semilla: str&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- preprocesador: Preprocesador&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- algoritmo: AlgoritmoCaracteristicas&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- predictor: PredictorPerroGato&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="81" vertex="1">
+                    <mxGeometry y="26" width="320" height="94" as="geometry"/>
+                </mxCell>
+                <mxCell id="83" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="81" vertex="1">
+                    <mxGeometry y="120" width="320" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="84" value="&lt;font face=&quot;Nunito&quot;&gt;+ realizar()&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- leer_imagenes(): X_train, y_train, X_test, y_test&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- preprocesar_imagenes(X_train, X_test): X_train, X_test&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- transformar_imagenes(X_train, X_test): X_train, X_test&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font face=&quot;Nunito&quot;&gt;- utilizar_IA(X_train, y_train, X_test, y_test); accuracy&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="81" vertex="1">
+                    <mxGeometry y="130" width="320" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="88" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;endArrow=block;endFill=0;strokeWidth=1;endSize=12;" parent="1" source="39" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1200" y="440" as="sourcePoint"/>
+                        <mxPoint x="1381" y="355" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="90" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=0.013;entryY=0.274;entryDx=0;entryDy=0;endArrow=block;endFill=0;endSize=12;entryPerimeter=0;" parent="1" source="35" target="16" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1080" y="548" as="sourcePoint"/>
+                        <mxPoint x="1210" y="305" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1020" y="638"/>
+                            <mxPoint x="1020" y="268"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="91" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=block;endFill=0;endSize=12;" parent="1" source="42" target="16" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1080" y="548" as="sourcePoint"/>
+                        <mxPoint x="1210" y="305" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1600" y="538"/>
+                            <mxPoint x="1600" y="295"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="92" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=1.005;entryY=0.299;entryDx=0;entryDy=0;endArrow=block;endFill=0;endSize=12;entryPerimeter=0;" parent="1" source="45" target="16" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1580" y="548" as="sourcePoint"/>
+                        <mxPoint x="1460" y="305" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1620" y="638"/>
+                            <mxPoint x="1620" y="271"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="94" style="edgeStyle=none;html=1;exitX=0.499;exitY=1.064;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" parent="1" source="56" target="57" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="95" value="&lt;font face=&quot;Nunito&quot;&gt;&amp;lt;&amp;lt;use&amp;gt;&amp;gt;&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="94" vertex="1" connectable="0">
+                    <mxGeometry x="-0.0767" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="99" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;endArrow=block;endFill=0;endSize=12;dashed=1;" parent="1" source="65" target="57" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="230" y="1100" as="sourcePoint"/>
+                        <mxPoint x="450" y="960" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="900" y="950"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="100" value="&lt;font face=&quot;Nunito&quot;&gt;&amp;lt;&amp;lt;implements&amp;gt;&amp;gt;&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="99" vertex="1" connectable="0">
+                    <mxGeometry x="0.0652" y="2" relative="1" as="geometry">
+                        <mxPoint x="52" y="68" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="101" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.984;entryDx=0;entryDy=0;endArrow=block;endFill=0;endSize=12;dashed=1;entryPerimeter=0;" parent="1" source="69" target="60" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="240" y="1110" as="sourcePoint"/>
+                        <mxPoint x="460" y="970" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="102" value="&lt;font face=&quot;Nunito&quot;&gt;&amp;lt;&amp;lt;implements&amp;gt;&amp;gt;&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="101" vertex="1" connectable="0">
+                    <mxGeometry x="0.0652" y="2" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="104" value="Object" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
+                    <mxGeometry x="1600" y="30" width="110" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="106" value="Object" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
+                    <mxGeometry x="30" y="1670" width="110" height="50" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
