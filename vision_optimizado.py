@@ -2,13 +2,15 @@ import numpy as np
 import os
 import cv2
 import random
+import time
 
-from typing import Tuple, List, Literal
+from typing import Tuple, List
 from abc import ABC, abstractmethod
 from numba import njit
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
 
 # ======== SISTEMA DE LECTURA DE DATOS ========
 class ClasePerroGato:
@@ -17,13 +19,12 @@ class ClasePerroGato:
 
 class Lector:
     def __init__(self, ruta_train_perros: str, ruta_train_gatos: str,
-                ruta_test_perros: str, ruta_test_gatos: str):
+                ruta_test_perros: str, ruta_test_gatos: str, semilla: int):
         self.__ruta_train_perros = ruta_train_perros
         self.__ruta_train_gatos = ruta_train_gatos
         self.__ruta_test_perros = ruta_test_perros
         self.__ruta_test_gatos = ruta_test_gatos
-
-        self.__SEMILLA = 50
+        self.__semilla = semilla
 
     def leer_dataset(self) -> Tuple[List[np.ndarray], List, List[np.ndarray], List]:
         ''' Devuelve X_train, y_train, X_test, y_test '''
@@ -47,9 +48,9 @@ class Lector:
         imagenes = imgs_perros + imgs_gatos
         clases = clases_perros + clases_gatos
 
-        random.seed(self.__SEMILLA)
+        random.seed(self.__semilla)
         random.shuffle(imagenes)
-        random.seed(self.__SEMILLA)
+        random.seed(self.__semilla)
         random.shuffle(clases)
 
         return imagenes, clases
@@ -114,9 +115,10 @@ class Preprocesador(ABC):
 
     def __aplicar_filtro(
             self, img: np.ndarray,
-            tipo: Literal['media', 'mediana', 'gaussiano'],
+            tipo: str,
             kernel: np.ndarray | None=None
         ) -> np.ndarray:
+        """ tipo: "media", "mediana", "gaussiano" """
 
         if not(tipo in ['media', 'mediana', 'gaussiano']):
             raise Exception('Tipo de filtro no valido.')
@@ -391,8 +393,8 @@ class TransformadorCaracteristicas:
 
 # ======== SISTEMA DE IA ========
 class PredictorPerroGato:
-    def __init__(self, tipo_modelo: Literal['adaboost', 'random_forest'], max_est: int):
-        ''' modelo: Un modelo de IA para entrenarlo y predecir '''
+    def __init__(self, tipo_modelo: str, max_est: int):
+        ''' tipo_modelo: "adaboost", "random_forest '''
         if not(tipo_modelo in ['adaboost', 'random_forest']):
             raise Exception('Tipo de modelo incorrecto')
         if max_est < 2:
@@ -441,43 +443,119 @@ class PredictorPerroGato:
         elif self.__tipo_modelo == 'random_forest':
             return RandomForestClassifier(n_estimators=n_estimadores)
 
-def experimento(
-        preprocesador: Preprocesador,
-        algoritmo: AlgoritmoCaracteristicas,
-        predictor: PredictorPerroGato
-    ) -> float:
-    """ Devuelve el accuracy """
+# ======== SISTEMA DE EXPERIMENTACION ========
+class Experimento:
+    def __init__(
+            self, nombre: str,
+            preprocesador: Preprocesador,
+            algoritmo: AlgoritmoCaracteristicas,
+            predictor: PredictorPerroGato,
+            semilla: int
+        ) -> None:
 
-    # =========== PROCESO DE ENTRENAMIENTO ===========
-    # Leemos los datos
-    lector = Lector(
-        ruta_train_perros='dataset/cat_dog_100/train/dog',
-        ruta_train_gatos='dataset/cat_dog_100/train/cat',
-        ruta_test_perros='dataset/cat_dog_100/test/dog',
-        ruta_test_gatos='dataset/cat_dog_100/test/cat'
-    )
-    X_train, y_train, X_test, y_test = lector.leer_dataset()
+        self.__nombre = nombre
+        self.__semilla = semilla
+        self.__preprocesador = preprocesador
+        self.__algoritmo = algoritmo
+        self.__predictor = predictor
 
-    # Los preprocesamos
-    for i, img in enumerate(X_train):
-        X_train[i] = preprocesador.preprocesar(img)
-    for i, img in enumerate(X_test):
-        X_test[i] = preprocesador.preprocesar(img)
+    def realizar(self):
+        print('===============================')
+        print('   ' + self.__nombre)
+        print('===============================')
+        
+        t_ini = time.time()
+        X_train, y_train, X_test, y_test = self.__leer_imagenes()
+        X_train, y_train, X_test, y_test = self.__preprocesar_imagenes(
+            X_train, y_train, X_test, y_test
+        )
+        X_train, X_test = self.__transformar_imagenes(X_train, X_test)
+        accuracy = self.__utilizar_IA(
+            np.array(X_train),
+            np.array(y_train),
+            np.array(X_test),
+            np.array(y_test)
+        )
+        t_fin = time.time()
+        
+        print('   Resultados:')
+        print(f'      Tiempo: {round(t_fin - t_ini, 2)}seg')
+        print(f'      Tamaño del vector de caracteristicas: {X_train[0].shape}')
+        print(f'      Accuracy en test: ', accuracy)
+        print(f'      Sistemas: ', end='')
+        print(f'{self.__preprocesador.__class__.__name__}', end=' ')
+        print(f'{self.__algoritmo.__class__.__name__}', end=' ')
+        print(f'{self.__predictor.__class__.__name__}')
+        print(f'----------------------------------------', end='')
+        print(f'----------------------------------------\n')
 
-    # Transformamos las imagenes a vectores de caracterisitcas
-    '''transformador = TransformadorCaracteristicas(algoritmo)
-    for i, img in enumerate(X_train):
-        X_train[i] = transformador.transformar(img)
-    for i, img in enumerate(X_test):
-        X_test[i] = transformador.transformar(img)'''
+        # Sacamos gráficos
 
-    # Entrenar la IA
-    '''predictor.entrenar(X_train, y_train)
+    def __leer_imagenes(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        print('   Leyendo imágenes...')
+        lector = Lector(
+            ruta_train_perros='dataset/cat_dog_100/train/dog',
+            ruta_train_gatos='dataset/cat_dog_100/train/cat',
+            ruta_test_perros='dataset/cat_dog_100/test/dog',
+            ruta_test_gatos='dataset/cat_dog_100/test/cat',
+            semilla=self.__semilla
+        )
+        X_train, y_train, X_test, y_test = lector.leer_dataset()
+        return X_train, y_train, X_test, y_test
+    
+    def __preprocesar_imagenes(
+            self,
+            X_train: np.ndarray,
+            y_train: np.ndarray,
+            X_test: np.ndarray,
+            y_test: np.ndarray
+        ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
 
-    # =========== PROCESO DE PREDICCION ===========
-    y_test_pred = predictor.predecir(X_test)
-    accuracy = np.where(y_test == y_test_pred)[0].size / y_test.size
-    return accuracy'''
+        print('   Preprocesando imágenes...')
+        for i, img in enumerate(X_train):
+            X_train[i] = self.__preprocesador.preprocesar(img)
+        for i, img in enumerate(X_test):
+            X_test[i] = self.__preprocesador.preprocesar(img)
+        return X_train, y_train, X_test, y_test
+
+    def __transformar_imagenes(
+            self,
+            X_train: np.ndarray,
+            X_test: np.ndarray
+        ) -> Tuple[np.ndarray, np.ndarray]:
+
+        print('   Calculando vectores de caracteristicas...')
+        transformador = TransformadorCaracteristicas(self.__algoritmo)
+        for i, img in enumerate(X_train):
+            X_train[i] = transformador.transformar(img)
+        for i, img in enumerate(X_test):
+            X_test[i] = transformador.transformar(img)
+        return X_train, X_test
+    
+    def __utilizar_IA(self,
+            X_train: np.ndarray,
+            y_train: np.ndarray,
+            X_test: np.ndarray,
+            y_test: np.ndarray
+        ) -> float:
+        """ Devuelve el accuracy """
+
+        print('   Entrenando modelo de IA...')
+        X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=.25, random_state=self.__semilla)
+        self.__predictor.entrenar(X_train, y_train, X_val, y_val)
+
+        print('   Clasificando imágenes de test...')
+        y_test_pred = self.__predictor.predecir(X_test)
+        accuracy = np.where(y_test == y_test_pred)[0].size / y_test.size
+        return accuracy
 
 if __name__ == '__main__':
-    experimento(PrepGaussianoEqu(7, 3), AlgoritmoTexturas(), PredictorPerroGato('random_forest', 100))
+    exp1 = Experimento(
+        nombre='Experimento 1',
+        preprocesador=PrepGaussianoEqu(7, 3),
+        algoritmo=AlgoritmoTexturas(),
+        predictor=PredictorPerroGato('random_forest', 300),
+        semilla=50
+    )
+
+    exp1.realizar()
