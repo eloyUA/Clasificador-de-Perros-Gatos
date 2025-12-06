@@ -418,12 +418,18 @@ class PredictorPerroGato:
         ) -> List[float]:
         
         accuracies = []
+        accuracies_train = []
         best_acc = -np.inf
         best_model = None
         for n_est in range(2, self.__max_est + 1):
             modelo = self.__crear_modelo(n_est)
+            #Entrenamos el modelo
             modelo.fit(X_train, y_train)
-
+            #Accuracy en el train para ver si hay sobreajsute
+            y_pred_train = modelo.predict(X_train)
+            acc_train = np.where(y_train == y_pred_train)[0].size / y_pred_train.shape[0]
+            accuracies_train.append(acc_train)
+            #Accuracy en validacion para ver cual es la mejor n_est
             y_pred = modelo.predict(X_val)
             acc = np.where(y_val == y_pred)[0].size / y_pred.shape[0]
             if acc > best_acc:
@@ -434,7 +440,7 @@ class PredictorPerroGato:
         y_total = np.concatenate((y_train,y_val))
         self.__modelo = best_model
         self.__modelo.fit(X_total, y_total)
-        return accuracies
+        return accuracies, accuracies_train
 
     def predecir(self, X: np.ndarray) -> np.ndarray:
         if self.__modelo is None:
@@ -545,8 +551,11 @@ class Experimento:
 
         print('   Entrenando modelo de IA...')
         X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=.25, random_state=self.__semilla)
-        self.__predictor.entrenar(X_train, y_train, X_val, y_val)
-
+        #Ahora devuelve 2 curvas
+        accuracies, accuracies_train = self.__predictor.entrenar(X_train, y_train, X_val, y_val)
+        #Aqui tengo algo mas de dudas, las guardo por si queremos ver las diferencias para ver si hay sobreajuste
+        self.__accuracies_val = accuracies
+        self.__accuracies_train = accuracies_train
         print('   Clasificando imágenes de test...')
         y_test_pred = self.__predictor.predecir(X_test)
         accuracy = np.where(y_test == y_test_pred)[0].size / y_test.size
