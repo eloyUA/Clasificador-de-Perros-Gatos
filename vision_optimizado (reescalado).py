@@ -422,7 +422,7 @@ class PredictorPerroGato:
         best_model = None
         for n_est in range(2, self.__max_est + 1):
             modelo = self.__crear_modelo(n_est)
-            modelo.fit(X_val, y_val)
+            modelo.fit(X_train, y_train)
 
             y_pred = modelo.predict(X_val)
             acc = np.where(y_val == y_pred)[0].size / y_pred.shape[0]
@@ -430,9 +430,10 @@ class PredictorPerroGato:
                 best_acc = acc
                 best_model = modelo
             accuracies.append(acc)
-        
+        X_total = np.concatenate((X_train,X_val))
+        y_total = np.concatenate((y_train,y_val))
         self.__modelo = best_model
-        self.__modelo.fit(X_train, y_train)
+        self.__modelo.fit(X_total, y_total)
         return accuracies
 
     def predecir(self, X: np.ndarray) -> np.ndarray:
