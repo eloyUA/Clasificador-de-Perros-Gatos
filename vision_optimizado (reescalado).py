@@ -3,6 +3,9 @@ import os
 import cv2
 import random
 import time
+import matplotlib.pylab as plt
+import pickle
+import multiprocessing
 
 from typing import Tuple, List, Optional
 from abc import ABC, abstractmethod
@@ -287,11 +290,12 @@ class AlgoritmoOrientaciones(AlgoritmoCaracteristicas):
         """ Requisito: Imagen cuadrada y multiplo de 8 """
         if img.shape[0] != img.shape[1] or img.shape[0] % 8 != 0 or img.shape[1] % 8 != 0:
             raise Exception('Requisito: Imagen cuadrada y multiplo de 8')
-        
+
         tam_celda = 8
         img_gris = np.mean(img, axis=2).astype(np.uint8)
+        reescalada = cv2.resize(img_gris, (128, 128), interpolation=cv2.INTER_AREA)
 
-        magnitudes, orientaciones = self._calcular_derivadas_Sobel(img_gris)
+        magnitudes, orientaciones = self._calcular_derivadas_Sobel(reescalada)
         imagen_histogramas = self._calc_imagen_histograma(orientaciones, magnitudes, tam_celda)
         vec_carac = self._normalizacion_por_bloques(imagen_histogramas)
         return vec_carac
@@ -343,52 +347,39 @@ class AlgoritmoOrientaciones(AlgoritmoCaracteristicas):
                 img_hist_norm[i, j] = np.linalg.norm(vector)
         return img_hist_norm.flatten()
 
-class AlgoritmoNuestro(AlgoritmoOrientaciones):
+class AlgoritmoNuestro(AlgoritmoCaracteristicas):
     def __init__(self):
         super().__init__()
+
+        self.__alg_tex = AlgoritmoTexturas()
 
     def calc_vector_caracteristicas(self, img: np.ndarray) -> np.ndarray:
         """ Requisito: Imagen (256x256) """
         if img.shape[0] != 256 and img.shape[1] != 256:
             raise Exception('Requisito: Imagen (256x256)')
         
-        img_gris = np.mean(img, axis=2).astype(np.uint8)
-
-        tam_celda_ext = 16
-        tam_celda_int = 8
-
-        vec_carac_int = self.__calc_vector_carac_imagen_interior(img_gris, tam_celda_ext, tam_celda_int)
-        vec_carac_ext = self.__calc_vector_carac_imagen_exterior(img_gris, tam_celda_ext)
-        vec_carac = np.concatenate((vec_carac_int, vec_carac_ext))
+        vec_carac_int = self.__calc_vector_carac_imagen_interior(img)
+        vec_carac_ext = self.__calc_vector_carac_imagen_exterior(img)
+        vec_carac = 0.8*vec_carac_int + 0.2*vec_carac_ext
         return vec_carac
         
-    def __calc_vector_carac_imagen_interior(self, img: np.ndarray, tam_celda_ext: int, tam_celda_int: int) -> np.ndarray:
-        img_interior = img[4*tam_celda_ext:-4*tam_celda_ext, 4*tam_celda_ext:-4*tam_celda_ext]
-        vec_carac_interior = self.__calc_vector_carac_zona(img_interior, tam_celda_int)
+    def __calc_vector_carac_imagen_interior(self, img: np.ndarray) -> np.ndarray:
+        img_interior = img[64:-64, 64:-64, :]
+        vec_carac_interior = self.__alg_tex.calc_vector_caracteristicas(img_interior)
         return vec_carac_interior
     
-    def __calc_vector_carac_imagen_exterior(self, img: np.ndarray, tam_celda_ext: int) -> np.ndarray:
-        borde_superior = img[:4*tam_celda_ext, :]
-        borde_inferior = img[-4*tam_celda_ext:, :]
-        borde_izquierdo = img[:, :4*tam_celda_ext]
-        borde_derecho = img[:, -4*tam_celda_ext:]
-        vec_carac_borde_sup = self.__calc_vector_carac_zona(borde_superior, tam_celda_ext)
-        vec_carac_borde_inf = self.__calc_vector_carac_zona(borde_inferior, tam_celda_ext)
-        vec_carac_borde_izq = self.__calc_vector_carac_zona(borde_izquierdo, tam_celda_ext)
-        vec_carac_borde_der = self.__calc_vector_carac_zona(borde_derecho, tam_celda_ext)
-        vec_carac_exterior = np.concatenate((
-            vec_carac_borde_sup,
-            vec_carac_borde_inf,
-            vec_carac_borde_izq,
-            vec_carac_borde_der
-        ))
+    def __calc_vector_carac_imagen_exterior(self, img: np.ndarray) -> np.ndarray:
+        borde_superior = img[:64, :, :]
+        borde_inferior = img[-64:, :, :]
+        borde_izquierdo = img[64:-64, :64, :]
+        borde_derecho = img[64:-64:, -64:, :]
+        vec_carac_borde_sup = self.__alg_tex.calc_vector_caracteristicas(borde_superior)
+        vec_carac_borde_inf = self.__alg_tex.calc_vector_caracteristicas(borde_inferior)
+        vec_carac_borde_izq = self.__alg_tex.calc_vector_caracteristicas(borde_izquierdo)
+        vec_carac_borde_der = self.__alg_tex.calc_vector_caracteristicas(borde_derecho)
+        vec_carac_exterior = vec_carac_borde_sup + vec_carac_borde_inf
+        vec_carac_exterior += vec_carac_borde_izq + vec_carac_borde_der
         return vec_carac_exterior
-
-    def __calc_vector_carac_zona(self, zona: np.ndarray, tam_celda: int) -> np.ndarray:
-        magnitudes, orientaciones = self._calcular_derivadas_Sobel(zona)
-        img_hist = self._calc_imagen_histograma(orientaciones, magnitudes, tam_celda)
-        vec_carac_zona = self._normalizacion_por_bloques(img_hist)
-        return vec_carac_zona
 
 class TransformadorCaracteristicas:
     def __init__(self, algoritmo: AlgoritmoCaracteristicas):
@@ -398,16 +389,16 @@ class TransformadorCaracteristicas:
         return self.__algoritmo.calc_vector_caracteristicas(img)
 
 # ======== SISTEMA DE IA ========
-class PredictorPerroGato:
-    def __init__(self, tipo_modelo: str, max_est: int):
-        ''' tipo_modelo: "adaboost", "random_forest '''
-        if not(tipo_modelo in ['adaboost', 'random_forest']):
-            raise Exception('Tipo de modelo incorrecto')
-        if max_est < 2:
+class PredictorPerroGato(ABC):
+    def __init__(self, min_est: int, max_est: int):
+        ''' Rango numero estimadores: [min_est, max_est) '''
+        if min_est < 1 or max_est < 2:
             raise Exception('Requisito: Numero de estimadores >= 2')
-        
+        if max_est <= min_est:
+            raise Exception('Requisito: min_est < max_est')
+
+        self.__min_est = min_est
         self.__max_est = max_est
-        self.__tipo_modelo = tipo_modelo
         self.__modelo = None
 
     def entrenar(
@@ -417,44 +408,61 @@ class PredictorPerroGato:
             y_val: np.ndarray
         ) -> List[float]:
         
-        accuracies = []
-        accuracies_train = []
-        best_acc = -np.inf
+        accs_val = []
+        accs_train = []
+        best_n_est = None
         best_model = None
-        for n_est in range(2, self.__max_est + 1):
-            modelo = self.__crear_modelo(n_est)
-            #Entrenamos el modelo
-            modelo.fit(X_train, y_train)
-            #Accuracy en el train para ver si hay sobreajsute
-            y_pred_train = modelo.predict(X_train)
+        best_acc_val = -np.inf
+        for n_est in range(self.__min_est, self.__max_est):
+            self.__modelo = self.crear_modelo(n_est)
+            self.__modelo.fit(X_train, y_train)
+
+            y_pred_train = self.__modelo.predict(X_train)
             acc_train = np.where(y_train == y_pred_train)[0].size / y_pred_train.shape[0]
-            accuracies_train.append(acc_train)
-            #Accuracy en validacion para ver cual es la mejor n_est
-            y_pred = modelo.predict(X_val)
-            acc = np.where(y_val == y_pred)[0].size / y_pred.shape[0]
-            if acc > best_acc:
-                best_acc = acc
-                best_model = modelo
-            accuracies.append(acc)
-        X_total = np.concatenate((X_train,X_val))
-        y_total = np.concatenate((y_train,y_val))
+            accs_train.append(acc_train)
+
+            y_pred_val = self.__modelo.predict(X_val)
+            acc_val = np.where(y_val == y_pred_val)[0].size / y_pred_val.shape[0]
+            accs_val.append(acc_val)
+
+            if acc_val > best_acc_val:
+                best_acc_val = acc_val
+                best_n_est = n_est
+                best_model = self.__modelo
+        
         self.__modelo = best_model
-        self.__modelo.fit(X_total, y_total)
-        return accuracies, accuracies_train
+        self.__modelo.fit(X_train, y_train)
+        return accs_val, accs_train, best_n_est
 
     def predecir(self, X: np.ndarray) -> np.ndarray:
         if self.__modelo is None:
             raise Exception("El modelo no esta entrenado.")
         return self.__modelo.predict(X)
     
-    def __crear_modelo(self, n_estimadores: int):
-        if self.__tipo_modelo == 'adaboost':
-            return AdaBoostClassifier(
-                estimator=DecisionTreeClassifier(max_depth=1),
-                n_estimators=n_estimadores
-            )
-        elif self.__tipo_modelo == 'random_forest':
-            return RandomForestClassifier(n_estimators=n_estimadores)
+    @abstractmethod
+    def crear_modelo(self, n_estimadores: int):
+        pass
+
+class PredictorAdaboost(PredictorPerroGato):
+    def __init__(self, min_est: int, max_est: int, semilla: int):
+        super().__init__(min_est, max_est)
+
+        self.__semilla = semilla
+
+    def crear_modelo(self, n_estimadores: int):
+        return AdaBoostClassifier(
+            estimator=DecisionTreeClassifier(max_depth=1, random_state=self.__semilla),
+            n_estimators=n_estimadores
+        )
+    
+class PredictorRandomForest(PredictorPerroGato):
+    def __init__(self, min_est: int, max_est: int, semilla: int):
+        super().__init__(min_est, max_est)
+
+        self.__semilla = semilla
+
+    def crear_modelo(self, n_estimadores: int):
+        return RandomForestClassifier(n_estimators=n_estimadores, random_state=self.__semilla)
 
 # ======== SISTEMA DE EXPERIMENTACION ========
 class Experimento:
@@ -476,39 +484,71 @@ class Experimento:
         print('===============================')
         print('   ' + self.__nombre)
         print('===============================')
-        
+
+        resultados = self.__ejecutar_procedimiento()
+
+        preprocesador = resultados['preprocesador']
+        algoritmo = resultados['algoritmo']
+        predictor = resultados['predictor']
+        tiempo = resultados['tiempo']
+        tam_vector = resultados['tam_vector']
+        best_n_est = resultados['best_n_est']
+        acc = resultados['acc']
+        acc_gatos = resultados['acc_gatos']
+        acc_perros = resultados['acc_perros']
+
+        print('   Resultados:')
+        print(f'      Tiempo: {tiempo}seg')
+        print(f'      Tamaño del vector de caracteristicas: {tam_vector}')
+        print(f'      Mejor n_est: ', best_n_est)
+        print(f'      Accuracy en test: ', acc)
+        print(f'      Accuracy en test (Gatos): ', acc_gatos)
+        print(f'      Accuracy en test (Perros): ', acc_perros)
+        print(f'      Sistemas: ', end='')
+        print(f'{preprocesador}', end=' ')
+        print(f'{algoritmo}', end=' ')
+        print(f'{predictor}')
+        print(f'----------------------------------------', end='')
+        print(f'----------------------------------------\n')
+
+        return resultados
+
+    def __ejecutar_procedimiento(self):
         t_ini = time.time()
         X_train, y_train, X_test, y_test = self.__leer_imagenes()
         X_train, X_test = self.__preprocesar_imagenes(X_train, X_test)
         X_train, X_test = self.__transformar_imagenes(X_train, X_test)
-        accuracy = self.__utilizar_IA(
+        best_n_est, acc, acc_gatos, acc_perros, accs_val, accs_train = self.__utilizar_IA(
             np.array(X_train),
             np.array(y_train),
             np.array(X_test),
             np.array(y_test)
         )
         t_fin = time.time()
-        
-        print('   Resultados:')
-        print(f'      Tiempo: {round(t_fin - t_ini, 2)}seg')
-        print(f'      Tamaño del vector de caracteristicas: {X_train[0].shape}')
-        print(f'      Accuracy en test: ', accuracy)
-        print(f'      Sistemas: ', end='')
-        print(f'{self.__preprocesador.__class__.__name__}', end=' ')
-        print(f'{self.__algoritmo.__class__.__name__}', end=' ')
-        print(f'{self.__predictor.__class__.__name__}')
-        print(f'----------------------------------------', end='')
-        print(f'----------------------------------------\n')
+        tiempo = round(t_fin - t_ini, 2)
 
-        # Sacamos gráficos
+        resultados = {
+            'preprocesador': self.__preprocesador.__class__.__name__,
+            'algoritmo': self.__algoritmo.__class__.__name__,
+            'predictor': self.__predictor.__class__.__name__,
+            'tiempo': tiempo,
+            'tam_vector': X_train[0].shape,
+            'best_n_est': best_n_est,
+            'acc': acc,
+            'acc_gatos': acc_gatos,
+            'acc_perros': acc_perros,
+            'accs_val': accs_val,
+            'accs_train': accs_train
+        }
+        return resultados
 
     def __leer_imagenes(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         print('   Leyendo imágenes...')
         lector = Lector(
-            ruta_train_perros='dataset/cat_dog_100/train/dog',
-            ruta_train_gatos='dataset/cat_dog_100/train/cat',
-            ruta_test_perros='dataset/cat_dog_100/test/dog',
-            ruta_test_gatos='dataset/cat_dog_100/test/cat',
+            ruta_train_perros='dataset/cat_dog_500/train/dog',
+            ruta_train_gatos='dataset/cat_dog_500/train/cat',
+            ruta_test_perros='dataset/cat_dog_500/test/dog',
+            ruta_test_gatos='dataset/cat_dog_500/test/cat',
             semilla=self.__semilla
         )
         X_train, y_train, X_test, y_test = lector.leer_dataset()
@@ -551,50 +591,64 @@ class Experimento:
 
         print('   Entrenando modelo de IA...')
         X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=.25, random_state=self.__semilla)
-        #Ahora devuelve 2 curvas
-        accuracies, accuracies_train = self.__predictor.entrenar(X_train, y_train, X_val, y_val)
-        #Aqui tengo algo mas de dudas, las guardo por si queremos ver las diferencias para ver si hay sobreajuste
-        self.__accuracies_val = accuracies
-        self.__accuracies_train = accuracies_train
+        accs_val, accs_train, best_n_est = self.__predictor.entrenar(X_train, y_train, X_val, y_val)
         print('   Clasificando imágenes de test...')
+
         y_test_pred = self.__predictor.predecir(X_test)
-        accuracy = np.where(y_test == y_test_pred)[0].size / y_test.size
-        return accuracy
+        acc = np.where(y_test == y_test_pred)[0].size / y_test.size
+        
+        mascara_gatos = y_test == ClasePerroGato.CLASE_GATO
+        acc_gatos = np.where(y_test[mascara_gatos] == y_test_pred[mascara_gatos])[0].size / y_test[mascara_gatos].size
+
+        mascara_perros = y_test == ClasePerroGato.CLASE_PERRO
+        acc_perros = np.where(y_test[mascara_perros] == y_test_pred[mascara_perros])[0].size / y_test[mascara_perros].size
+
+        return best_n_est, acc, acc_gatos, acc_perros, accs_val, accs_train
 
 if __name__ == '__main__':
-    exp1 = Experimento(
-        nombre='Experimento 1',
-        preprocesador=PrepGaussiano(7, 3),
-        algoritmo=AlgoritmoHistograma(),
-        predictor=PredictorPerroGato('random_forest', 300),
-        semilla=50
-    )
+    def experimento_proceso(exp: Experimento):
+        return exp.realizar()
+    
+    semilla = 50
+    min_est = 1
+    max_est = 41
+    nucleos_fisicos = 4  # Nucleos fisicios de mi CPU
+    resultados = []
 
-    exp2 = Experimento(
-        nombre='Experimento 1',
-        preprocesador=PrepGaussiano(7, 3),
-        algoritmo=AlgoritmoTexturas(),
-        predictor=PredictorPerroGato('random_forest', 300),
-        semilla=50
-    )
+    for m in [7]:
+        preprocesadores = [
+            PrepMedia(m), PrepMediana(m), PrepGaussiano(m, 3),
+            PrepMediaEqu(m), PrepMedianaEqu(m), PrepGaussianoEqu(m, 3)
+        ]
+        algoritmos = [
+            AlgoritmoHistograma(), AlgoritmoTexturas(),
+            AlgoritmoOrientaciones(), AlgoritmoNuestro()
+        ]
+        predictores = [
+            PredictorRandomForest(min_est, max_est, semilla),
+            PredictorAdaboost(min_est, max_est, semilla)
+        ]
 
-    exp3 = Experimento(
-        nombre='Experimento 1',
-        preprocesador=PrepGaussiano(7, 3),
-        algoritmo=AlgoritmoOrientaciones(),
-        predictor=PredictorPerroGato('random_forest', 300),
-        semilla=50
-    )
+        # Crear lista de todos los experimentos
+        lista_experimentos = [
+            Experimento('Experimento', prep, alg, pred, semilla)
+            for prep in preprocesadores
+            for alg in algoritmos
+            for pred in predictores
+        ]
 
-    exp4 = Experimento(
-        nombre='Experimento 1',
-        preprocesador=PrepGaussiano(7, 3),
-        algoritmo=AlgoritmoNuestro(),
-        predictor=PredictorPerroGato('random_forest', 300),
-        semilla=50
-    )
+        # Ejecutar experimentos en paralelo usando todos los núcleos
+        with multiprocessing.Pool(processes=nucleos_fisicos) as pool:
+            resultados = pool.map(experimento_proceso, lista_experimentos)
 
-    exp1.realizar()
-    exp2.realizar()
-    exp3.realizar()
-    exp4.realizar()
+        # Guardar resultados
+        ruta = f'experimentos/AllPrep({m}x{m})_AllAlg_AllPred.pkl'
+        with open(ruta, 'wb') as f:
+            pickle.dump(resultados, f)
+
+        resultados.clear()
+
+    # Leer fichero de resultados
+    # with open('prep_alg_pred.pkl', 'rb') as f:
+        # resultados = pickle.load(f)
+    # print(resultados)
