@@ -25,9 +25,9 @@ def dibujar_grafico_barras(accs: list, labels: list, titulo: str, titulo_leyenda
         barras.append(bar)
 
     # Títulos y etiquetas
-    ax.set_title(titulo, pad=25, fontsize=22)
-    ax.set_xlabel('Predictores', labelpad=20, fontsize=14)
-    ax.set_ylabel('Accuracy', labelpad=20, fontsize=14)
+    ax.set_title(titulo, pad=25, fontsize=28)
+    ax.set_xlabel('Predictores', labelpad=20, fontsize=20)
+    ax.set_ylabel('Accuracy', labelpad=20, fontsize=20)
     ax.set_facecolor('#f1f1f1')
 
     yticks = [0, 0.2, 0.4, 0.6, 0.8, 1.0]
@@ -35,7 +35,7 @@ def dibujar_grafico_barras(accs: list, labels: list, titulo: str, titulo_leyenda
     ax.set_ylim(0, 1.2)
 
     ax.set_xticks(x_indices)
-    ax.set_xticklabels(x, fontsize=14)
+    ax.set_xticklabels(x, fontsize=18)
 
     # Texto encima de cada barra
     for bars in barras:
@@ -44,10 +44,10 @@ def dibujar_grafico_barras(accs: list, labels: list, titulo: str, titulo_leyenda
             ax.text(
                 bar.get_x() + bar.get_width()/2, height + 0.02,
                 f"{height:.2f}", ha='center', va='bottom',
-                color='#333333', fontsize=10
+                color='#333333', fontsize=14
             )
 
-    ax.legend(title=titulo_leyenda, loc='upper right', fontsize=10, title_fontsize=11, ncol=3)
+    ax.legend(title=titulo_leyenda, loc='upper right', fontsize=14, title_fontsize=16, ncol=3)
     plt.tight_layout()
     plt.show()
 
