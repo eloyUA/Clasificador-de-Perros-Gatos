@@ -121,6 +121,71 @@ def generar_graficos_barras(ruta: str, titulo_leyenda: str):
 
         dibujar_grafico_barras(accs, labels, titulos[i], titulo_leyenda)
 
+def obtener_medidas_globales(ruta_3x3: str, ruta_7x7: str):
+    with open(ruta_3x3, 'rb') as f:
+        resultados_3x3 = pickle.load(f)
+
+    with open(ruta_7x7, 'rb') as f:
+        resultados_7x7 = pickle.load(f)
+
+    acc = 0
+    acc_gatos = 0
+    acc_perros = 0
+    n_est = 0
+    for i in range(len(resultados_3x3)):
+        res_3x3 = resultados_3x3[i]
+        res_7x7 = resultados_7x7[i]
+
+        acc += res_3x3['acc'] + res_7x7['acc']
+        acc_gatos += res_3x3['acc_gatos'] + res_7x7['acc_gatos']
+        acc_perros += res_3x3['acc_perros'] + res_7x7['acc_perros']
+        n_est += res_3x3['best_n_est'] + res_7x7['best_n_est']
+    acc /= 2*len(resultados_3x3)
+    acc_gatos /= 2*len(resultados_3x3)
+    acc_perros /= 2*len(resultados_3x3)
+    n_est /= 2*len(resultados_3x3)
+
+    print('Acc: ', acc)
+    print('Acc_gatos: ', acc_gatos)
+    print('Acc_perros: ', acc_perros)
+    print('N_est: ', n_est)
+
+def top_modelos(ruta_3x3: str, ruta_7x7: str):
+    with open(ruta_3x3, 'rb') as f:
+        resultados_3x3 = pickle.load(f)
+
+    with open(ruta_7x7, 'rb') as f:
+        resultados_7x7 = pickle.load(f)
+
+    for res in resultados_7x7:
+        if res['preprocesador'] == 'PrepMedia':
+            if res['algoritmo'] == 'AlgoritmoNuestro':
+                if res['predictor'] == 'PredictorRandomForest':
+                    print(res)
+
+    print('')
+    for res in resultados_7x7:
+        if res['preprocesador'] == 'PrepMedia':
+            if res['algoritmo'] == 'AlgoritmoHistograma':
+                if res['predictor'] == 'PredictorRandomForest':
+                    print(res)
+
+    print('')
+    for res in resultados_3x3:
+        if res['preprocesador'] == 'PrepMediaEqu':
+            if res['algoritmo'] == 'AlgoritmoOrientaciones':
+                if res['predictor'] == 'PredictorRandomForest':
+                    print(res)
+
+    print('')
+    for res in resultados_3x3:
+        if res['preprocesador'] == 'PrepMedia':
+            if res['algoritmo'] == 'AlgoritmoTexturas':
+                if res['predictor'] == 'PredictorRandomForest':
+                    print(res)
+
 if __name__ == '__main__':
-    generar_graficos_barras('AllPrep(3x3)_AllAlg_AllPred.pkl', 'Preprocesador (3x3)')
-    generar_graficos_barras('AllPrep(7x7)_AllAlg_AllPred.pkl', 'Preprocesador (7x7)')
+    #generar_graficos_barras('AllPrep(3x3)_AllAlg_AllPred.pkl', 'Preprocesador (3x3)')
+    #generar_graficos_barras('AllPrep(7x7)_AllAlg_AllPred.pkl', 'Preprocesador (7x7)')
+    #obtener_medidas_globales('AllPrep(3x3)_AllAlg_AllPred.pkl', 'AllPrep(7x7)_AllAlg_AllPred.pkl')
+    top_modelos('AllPrep(3x3)_AllAlg_AllPred.pkl', 'AllPrep(7x7)_AllAlg_AllPred.pkl')
