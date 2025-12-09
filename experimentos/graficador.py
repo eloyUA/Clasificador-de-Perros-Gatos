@@ -150,6 +150,28 @@ def obtener_medidas_globales(ruta_3x3: str, ruta_7x7: str):
     print('Acc_perros: ', acc_perros)
     print('N_est: ', n_est)
 
+def graficar_funcion(accs_train: list, accs_val: list, titulo: str):
+    fig, ax = plt.subplots()
+
+    x = np.arange(1, len(accs_train) + 1)
+    ax.plot(x, accs_train, color='#FF8C66', label='Train', marker='o', markersize=4)
+    ax.plot(x, accs_val, color='#A066FF', label='Validacion', marker='o', markersize=4)
+
+    ax.set_title(titulo, pad=25)
+    ax.set_xlabel('Nº de estimadores', labelpad=20)
+    ax.set_ylabel('Accuracy', labelpad=20)
+    ax.set_facecolor('#f1f1f1')
+
+    yticks = [0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    ax.set_yticks(yticks)
+    ax.set_ylim(0, 1.4)
+
+    plt.tight_layout()
+
+    ax.legend(title='Conjuntos', loc='upper right')
+
+    plt.show()
+
 def top_modelos(ruta_3x3: str, ruta_7x7: str):
     with open(ruta_3x3, 'rb') as f:
         resultados_3x3 = pickle.load(f)
@@ -162,6 +184,7 @@ def top_modelos(ruta_3x3: str, ruta_7x7: str):
             if res['algoritmo'] == 'AlgoritmoNuestro':
                 if res['predictor'] == 'PredictorRandomForest':
                     print(res)
+                    graficar_funcion(res['accs_train'], res['accs_val'], 'AlgoritmoNuestro')
 
     print('')
     for res in resultados_7x7:
@@ -169,6 +192,7 @@ def top_modelos(ruta_3x3: str, ruta_7x7: str):
             if res['algoritmo'] == 'AlgoritmoHistograma':
                 if res['predictor'] == 'PredictorRandomForest':
                     print(res)
+                    graficar_funcion(res['accs_train'], res['accs_val'], 'AlgoritmoHistograma')
 
     print('')
     for res in resultados_3x3:
@@ -176,6 +200,7 @@ def top_modelos(ruta_3x3: str, ruta_7x7: str):
             if res['algoritmo'] == 'AlgoritmoOrientaciones':
                 if res['predictor'] == 'PredictorRandomForest':
                     print(res)
+                    graficar_funcion(res['accs_train'], res['accs_val'], 'AlgoritmoOrientaciones')
 
     print('')
     for res in resultados_3x3:
@@ -183,6 +208,7 @@ def top_modelos(ruta_3x3: str, ruta_7x7: str):
             if res['algoritmo'] == 'AlgoritmoTexturas':
                 if res['predictor'] == 'PredictorRandomForest':
                     print(res)
+                    graficar_funcion(res['accs_train'], res['accs_val'], 'AlgoritmoTexturas')
 
 if __name__ == '__main__':
     #generar_graficos_barras('AllPrep(3x3)_AllAlg_AllPred.pkl', 'Preprocesador (3x3)')
